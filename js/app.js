@@ -13,36 +13,17 @@ class TravelTipsApp {
   }
 
   bindEvents() {
-    // Form submission
     document.getElementById('tipForm').addEventListener('submit', (e) => {
       e.preventDefault();
       this.addTip();
     });
 
-    // Search
     document.getElementById('searchBtn').addEventListener('click', () => {
       this.searchTips();
     });
 
     document.getElementById('clearSearchBtn').addEventListener('click', () => {
       this.clearSearch();
-    });
-
-    // Modal
-    document.querySelector('.close-modal').addEventListener('click', () => {
-      this.closeModal();
-    });
-
-    document.getElementById('editForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.saveEdit();
-    });
-
-    // Close modal on outside click
-    document.getElementById('editModal').addEventListener('click', (e) => {
-      if (e.target.id === 'editModal') {
-        this.closeModal();
-      }
     });
   }
 
@@ -109,10 +90,6 @@ class TravelTipsApp {
           <div class="tip-date">${this.formatDate(tip.date)}</div>
         </div>
         <div class="tip-description">${this.escapeHtml(tip.description)}</div>
-        <div class="tip-actions">
-          <button class="btn btn-small btn-edit" onclick="app.editTip('${tip.id}')">Edit</button>
-          <button class="btn btn-small btn-delete" onclick="app.deleteTip('${tip.id}')">Delete</button>
-        </div>
       </div>
     `).join('');
   }
@@ -130,44 +107,6 @@ class TravelTipsApp {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-  }
-
-  async editTip(id) {
-    const tip = await DB.getTipById(id);
-    if (!tip) return;
-
-    document.getElementById('editId').value = tip.id;
-    document.getElementById('editCountry').value = tip.country;
-    document.getElementById('editCity').value = tip.city;
-    document.getElementById('editDate').value = tip.date;
-    document.getElementById('editDescription').value = tip.description;
-
-    document.getElementById('editModal').classList.remove('hidden');
-  }
-
-  async saveEdit() {
-    const id = document.getElementById('editId').value;
-    const updates = {
-      country: document.getElementById('editCountry').value.trim(),
-      city: document.getElementById('editCity').value.trim(),
-      date: document.getElementById('editDate').value,
-      description: document.getElementById('editDescription').value.trim()
-    };
-
-    await DB.updateTip(id, updates);
-    this.closeModal();
-    await this.loadTips();
-  }
-
-  async deleteTip(id) {
-    if (confirm('Are you sure you want to delete this tip?')) {
-      await DB.deleteTip(id);
-      await this.loadTips();
-    }
-  }
-
-  closeModal() {
-    document.getElementById('editModal').classList.add('hidden');
   }
 }
 
